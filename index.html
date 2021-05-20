@@ -1,0 +1,81 @@
+<html>
+  <head> 
+    <title>
+      Arpan Connect
+    </title>
+  </head>
+  <body scroll="no" style="overflow: hidden; text-align: center; display: flex; justify-content: center; align-items: flex-end; background-color: darkgrey; padding:0; margin: 0;">
+    <meta 
+         name='viewport' 
+         content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0'/>
+
+
+    <label id="instruction" style="font-family: sans-serif; color: grey; text-align: center; background-color: white;  border-radius: 28px;  text-align: center; vertical-align: middle; border-bottom-right-radius: 0px; border-bottom-left-radius: 0px; height: 0%; width: 100%;"></label>
+
+
+
+
+
+
+
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase.js"></script>
+
+    <!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-analytics.js"></script>
+
+    <script>
+      // Your web app's Firebase configuration
+      // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+      var firebaseConfig = {
+        apiKey: "AIzaSyD9ao7f292-KNB3NQ0p2pY4i_1VSQCasp0",
+        authDomain: "arpan-ecosystem.firebaseapp.com",
+        databaseURL: "https://arpan-ecosystem-default-rtdb.firebaseio.com",
+        projectId: "arpan-ecosystem",
+        storageBucket: "arpan-ecosystem.appspot.com",
+        messagingSenderId: "291031302217",
+        appId: "1:291031302217:web:92050f26eb70b2aa60bf98",
+        measurementId: "G-MDR8XNCC01",
+      };
+      // Initialize Firebase
+      firebase.initializeApp(firebaseConfig);
+      firebase.analytics();
+    </script>
+
+
+
+<!--Script to get destination URL-->
+    <script>
+      var instruction = document.getElementById('instruction');
+      var url_string = window.location.href;
+      var url = new URL(url_string);
+      var checkName = url.toString();
+      if (checkName.includes("?find=")) {
+        instruction.style.paddingTop = '10%';
+        instruction.style.paddingLeft = '5%';
+        instruction.style.paddingRight = '5%';
+        instruction.style.height = "50%";
+        var currentSearch = url.searchParams.get("find");
+
+        if (currentSearch != "") {
+          instruction.innerHTML = "<h1 style='color: grey;'>Verifying Code<br><label style='color:red;'>.</label><label style='color:green;'>.</label><label style='color:orange;'>.</label><label style='color: blue;'>.</label></h1>"
+          firebase.database().ref("ShortLinks/" + currentSearch).once("value").then(function (snapshot) {
+                var gotoURL = snapshot.val().visit;
+                instruction.innerHTML = "<h1 style='color: grey;'>Redirecting<br><label style='color:red;'>.</label><label style='color:green;'>.</label><label style='color:orange;'>.</label><label style='color: blue;'>.</label></h1>"
+                window.location.href = gotoURL;
+              })
+              .catch(function(error){
+                instruction.innerHTML = "<h1 style='color: grey;'>INVALID CODE</h1> <br><br> <label style='color:darkgrey;'>Please recheck and enter it after <label style='color:blue;'>'find='</label> in your URL box.<label> <br><br><br> <label style='color:darkgrey; font-size:70%;'>© Arpan Bhattacharya</label>"
+              });
+        } 
+        
+        else {
+          instruction.innerHTML = "<h3>Type your short code after 'find='</h3><b style='color:blue;'>(eg. find=MYCODE)</b> <br><br>in the URL box and then press <label style='color:black;'>ENTER/GO</label> button from your keyboard.<br><br><br><label style='color:darkgrey; font-size:70%;'>© Arpan Bhattacharya";
+        }
+      } else {
+        window.location.href = "http://127.0.0.1:5500/index.html?find=";
+      }
+    </script>
+  </body>
+</html>
