@@ -51,12 +51,12 @@
       var url_string = window.location.href;
       var url = new URL(url_string);
       var checkName = url.toString();
-      if (checkName.includes("?find=")) {
+      if (checkName.includes("?f=")) {
         instruction.style.paddingTop = '10%';
         instruction.style.paddingLeft = '5%';
         instruction.style.paddingRight = '5%';
         instruction.style.height = "50%";
-        var currentSearch = url.searchParams.get("find");
+        var currentSearch = url.searchParams.get("f");
 
         if (currentSearch != "") {
           instruction.innerHTML = "<h1 style='color: grey;'>Verifying Code<br><label style='color:red;'>.</label><label style='color:green;'>.</label><label style='color:orange;'>.</label><label style='color: blue;'>.</label></h1>"
@@ -66,15 +66,15 @@
                 window.location.href = gotoURL;
               })
               .catch(function(error){
-                instruction.innerHTML = "<h1 style='color: grey;'>INVALID CODE</h1> <br><br> <label style='color:darkgrey;'>Please recheck and enter it after <label style='color:blue;'>'find='</label> in your URL box.<label> <br><br><br> <label style='color:darkgrey; font-size:70%;'>© Arpan Bhattacharya</label>"
+                instruction.innerHTML = "<h1 style='color: grey;'>INVALID CODE</h1> <br><br> <label style='color:darkgrey;'>Please recheck and enter the code after <label style='color:blue;'>'f='</label> in your URL box.<label> <br><br><br> <label style='color:darkgrey; font-size:70%;'>© Arpan Bhattacharya</label>"
               });
         } 
         
         else {
-          instruction.innerHTML = "<h3>Type your short code after 'find='</h3><b style='color:blue;'>(eg. find=MYCODE)</b> <br><br>in the URL box and then press <label style='color:black;'>ENTER/GO</label> button from your keyboard.<br><br><br><label style='color:darkgrey; font-size:70%;'>© Arpan Bhattacharya";
+          instruction.innerHTML = "<h3>Type your short code after 'f='</h3><b style='color:blue;'>(eg. f=MYCODE)</b> <br><br>in the URL box and then press <label style='color:black;'>ENTER/GO</label> button from your keyboard.<br><br><br><label style='color:darkgrey; font-size:70%;'>© Arpan Bhattacharya";
         }
       } else {
-        window.location.href = "http://arpan.gq";
+        window.location.href = "http://www.arpan.gq/index.html";
       }
     </script>
   </body>
