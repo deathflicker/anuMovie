@@ -1,0 +1,48 @@
+<html>
+    <head>
+        <script async>
+            Object.defineProperty(navigator, 'userAgent', {get: function () { return 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.163 Safari/537.36'; }
+                });
+        </script>
+        <script src='https://meet.jit.si/external_api.js'></script>
+        <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    </head>
+    <body>
+        
+        <button onclick="btnClick()">Start</button>
+        <button onclick="toggle()">toggle</button>
+        <div style="position: relative; width: 720px; height: 600px;">
+            <div id="jitsi-meet-conf-container"></div>
+        </div>
+
+        <script>
+            var apiObj = null;
+            function btnClick(){
+                StartMeeting();
+            }
+
+
+            function StartMeeting(){
+                const domain = 'meet.jit.si/arpanTest';
+                const options = {
+                    roomName: 'arpanTest',
+                    width: 400,
+                    height: 400,
+                    parentNode: document.querySelector('#jitsi-meet-conf-container'),
+                    userInfo: {
+                        displayName: 'arpanBhatt'
+                    },
+                    configOverwrite: {
+                        prejoinPageEnabled: false,
+                        disableDeepLinking: true
+                    }
+                };
+                apiObj = new JitsiMeetExternalAPI(domain, options);
+            }
+
+            function toggle(){
+                apiObj.dispose();
+            }
+        </script>
+    </body>
+</html>
