@@ -1,91 +1,158 @@
 <html>
-    <head>
-        <link rel="stylesheet" href="loginIndex.css">
-    </head>
+  <head>
+    <style>
+      * {
+        padding: 0;
+        margin: 0;
+      }
 
-    <body scroll="no" style="overflow: hidden">
-        <meta 
-             name='viewport' 
-             content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' 
-        />
-    
-       <header>
-            <img src="test1.gif" alt="" height="100%" width="100%">
-       </header>
-        <footer>
-            AbaClass<label style="color: #f15b25;">.gq</label>
-            <br>
-            <!--Student Id-->
-            <input id="stdId" type="text" placeholder="Student Id" style="margin-top: 10%;">
-            <!--Student Password-->
-            <input id="stdPass" type="password" placeholder="Password">
-            <br>
-            <!--Login Btn-->
-            <button onclick="loginClick()">login</button>
-        </footer>
+      body {
+        background-color: #2a3040;
+        display: flex;
+        justify-content: center;
+        align-items: flex-end;
+        background-image: linear-gradient(to bottom, black, #2a3040, #2c3e50);
+      }
 
+      header {
+        position: fixed;
+        width: 100%;
+        height: 50%;
+        top: 0%;
+      }
+      header image {
+        width: 10%;
+        height: 10%;
+      }
 
+      footer {
+        background-color: white;
+        position: relative;
+        width: 90%;
+        font-size: 200%;
+        padding: 2%;
+        border-top-left-radius: 14px;
+        border-top-right-radius: 14px;
+        color: #273746;
+        font-family: sans-serif;
+        text-align: center;
+        padding-top: 5%;
+      }
+      footer input {
+        width: 80%;
+        height: 6%;
+        background-color: #e8f0fe;
+        border: solid darkgrey 1px;
+        font-size: 60%;
+        margin-top: 5%;
+        border-radius: 5px;
+        padding-left: 2%;
+      }
 
-         <!-- The core Firebase JS SDK is always required and must be listed first -->
-         <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase.js"></script>
-         <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-analytics.js"></script>
+      footer button {
+        margin-top: 10%;
+        margin-bottom: 10%;
+        width: auto;
+        height: auto;
+        font-size: 80%;
+        padding-top: 2%;
+        padding-bottom: 2%;
+        padding-right: 8%;
+        padding-left: 8%;
+        background-color: #f15b25;
+        color: whitesmoke;
+        border: solid #f15b25 2px;
+        border-radius: 5px;
+      }
+    </style>
+  </head>
 
-         <script>
-             // Your web app's Firebase configuration
-             // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-             var firebaseConfig = {
-                 apiKey: "AIzaSyD9ao7f292-KNB3NQ0p2pY4i_1VSQCasp0",
-                 authDomain: "arpan-ecosystem.firebaseapp.com",
-                 databaseURL: "https://arpan-ecosystem-default-rtdb.firebaseio.com",
-                 projectId: "arpan-ecosystem",
-                 storageBucket: "arpan-ecosystem.appspot.com",
-                 messagingSenderId: "291031302217",
-                 appId: "1:291031302217:web:92050f26eb70b2aa60bf98",
-                 measurementId: "G-MDR8XNCC01",
-             };
-             // Initialize Firebase
-             firebase.initializeApp(firebaseConfig);
-             firebase.analytics();
-         </script>
+  <body scroll="no" style="overflow: hidden">
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"
+    />
 
+    <header>
+      <img src="test1.gif" alt="" height="100%" width="100%" />
+    </header>
+    <footer>
+      AbaClass<label style="color: #f15b25">.gq</label>
+      <br />
+      <!--Student Id-->
+      <input
+        id="stdId"
+        type="text"
+        placeholder="Student Id"
+        style="margin-top: 10%"
+      />
+      <!--Student Password-->
+      <input id="stdPass" type="password" placeholder="Password" />
+      <br />
+      <!--Login Btn-->
+      <button onclick="loginClick()">login</button>
+    </footer>
 
-        <!--Function when login button is clicked-->
-        <script>
-            var stdId = document.getElementById('stdId');
-            var stdPass = document.getElementById('stdPass');
-            var firRef;
-            var userSuccess;
-            var examURL;
-            function loginClick(){
-                if(stdId.value!="" && stdPass.value!=0){
-                    firRef = firebase.database().ref('allStudent/'+stdId.value+'/pass');
-                    firRef.once("value", function(snapshot){
-                        if(snapshot.val()!=null){
-                            if(stdPass.value!=snapshot.val()){
-                                alert('Incorrect Password!');
-                            }
-                            else{
-                                userSuccess = stdId.value;
-                                firRef = firebase.database().ref('allStudent/'+userSuccess+'/examURL');
-                                firRef.once("value", function(snapshot){
-                                    examURL = snapshot.val();
-                                    firRef = firebase.database().ref('/exams/loggedIn');
-                                    firRef.set('yes');
-                                    firRef = firebase.database().ref('/exams/testURL');
-                                    firRef.set(examURL);
-                                    window.location.href='https://www.arpan.gq/exams'
-                                });
-                            }
-                        }
-                        else{
-                            alert('The student id is incorrect')
-                        }
-                    });
-                }
-                else{
-                    alert('One or more fields are empty!');
-                }
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-analytics.js"></script>
+
+    <script>
+      // Your web app's Firebase configuration
+      // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+      var firebaseConfig = {
+        apiKey: "AIzaSyD9ao7f292-KNB3NQ0p2pY4i_1VSQCasp0",
+        authDomain: "arpan-ecosystem.firebaseapp.com",
+        databaseURL: "https://arpan-ecosystem-default-rtdb.firebaseio.com",
+        projectId: "arpan-ecosystem",
+        storageBucket: "arpan-ecosystem.appspot.com",
+        messagingSenderId: "291031302217",
+        appId: "1:291031302217:web:92050f26eb70b2aa60bf98",
+        measurementId: "G-MDR8XNCC01",
+      };
+      // Initialize Firebase
+      firebase.initializeApp(firebaseConfig);
+      firebase.analytics();
+    </script>
+
+    <!--Function when login button is clicked-->
+    <script>
+      var stdId = document.getElementById("stdId");
+      var stdPass = document.getElementById("stdPass");
+      var firRef;
+      var userSuccess;
+      var examURL;
+      function loginClick() {
+        if (stdId.value != "" && stdPass.value != 0) {
+          firRef = firebase
+            .database()
+            .ref("allStudent/" + stdId.value + "/pass");
+          firRef.once("value", function (snapshot) {
+            if (snapshot.val() != null) {
+              if (stdPass.value != snapshot.val()) {
+                alert("Incorrect Password!");
+              } else {
+                userSuccess = stdId.value;
+                firRef = firebase
+                  .database()
+                  .ref("allStudent/" + userSuccess + "/examURL");
+                firRef.once("value", function (snapshot) {
+                  examURL = snapshot.val();
+                  firRef = firebase.database().ref("/exams/loggedIn");
+                  firRef.set("yes");
+                  firRef = firebase.database().ref("/exams/testURL");
+                  firRef.set(examURL);
+                  window.location.href = "https://www.arpan.gq/exams";
+                });
+              }
+            } else {
+              alert("The student id is incorrect");
             }
-        </script>
-    </body>
+          });
+        } else {
+          alert("One or more fields are empty!");
+        }
+      }
+    </script>
+  </body>
 </html>
