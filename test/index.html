@@ -7,7 +7,7 @@
         <script src='https://meet.jit.si/external_api.js'></script>
         <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     </head>
-    <body>
+    <body onload="bodyLoad()">
         
         <button onclick="btnClick()">Start</button>
         <button onclick="toggle()">toggle</button>
@@ -44,5 +44,23 @@
                 apiObj.dispose();
             }
         </script>
+
+
+<script>
+
+    var constraints;
+    function bodyLoad(){
+        constraints = 
+        {   audio: true,
+            video: true
+        };
+
+        navigator.mediaDevices.getUserMedia(constraints).then(function(mediastream){
+
+        }).catch(function(err){
+            console.log('error');
+        });
+    }
+</script>
     </body>
 </html>
