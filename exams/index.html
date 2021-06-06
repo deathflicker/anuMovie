@@ -1,210 +1,278 @@
 <html>
-    <head>
+  <head>
+    <script src='https://meet.jit.si/external_api.js'></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+      }
+      #bottom {
+        position: relative;
+        width: 100%;
+        height: 10%;
+        background-color: red;
+        text-align: center;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      #bottom button {
+        width: 100%;
+        height: 100%;
+        font-size: 110%;
+        border: solid 0px white;
+        color: white;
+        transition: 0.3s;
+      }
+    </style>
+  </head>
+  <body scroll="no" style="overflow: hidden" onload="bodyLoaded()">
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"
+    />
+    <div id="meet-conf-container"></div>
+    <!-- to display question paper-->
+    <iframe
+      id="qstn"
+      src=""
+      frameborder="0"
+      style="width: 100%; position: relative; height: 90%"
+    ></iframe>
 
-        <style>
-            *{
-                margin: 0;
-                padding: 0;
+    <!--display 2btns-->
+    <div id="bottom">
+      <button
+        id="strtTestBtn"
+        style="background-color: white"
+        onclick="startClick()"
+        disabled
+      >
+        Start Test
+      </button>
+      <button
+        id="endTestBtn"
+        style="background-color: #cb4335; width: 0%"
+        onclick="endClick()"
+      >
+        End Test
+      </button>
+    </div>
+
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-analytics.js"></script>
+
+    <script>
+      // Your web app's Firebase configuration
+      // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+      var firebaseConfig = {
+        apiKey: "AIzaSyD9ao7f292-KNB3NQ0p2pY4i_1VSQCasp0",
+        authDomain: "arpan-ecosystem.firebaseapp.com",
+        databaseURL: "https://arpan-ecosystem-default-rtdb.firebaseio.com",
+        projectId: "arpan-ecosystem",
+        storageBucket: "arpan-ecosystem.appspot.com",
+        messagingSenderId: "291031302217",
+        appId: "1:291031302217:web:92050f26eb70b2aa60bf98",
+        measurementId: "G-MDR8XNCC01",
+      };
+      // Initialize Firebase
+      firebase.initializeApp(firebaseConfig);
+      firebase.analytics();
+    </script>
+
+    <!--WHEN BODY LOADED check if test is already started-->
+    <script>
+      var minHeight;
+      var testURL;
+      firRef = firebase.database().ref("exams/testURL");
+      firRef.once("value", function (snapshot) {
+        testURL = snapshot.val();
+      });
+      var firRef;
+      var qstn = document.getElementById("qstn");
+      function bodyLoaded() {
+        minHeight = (window.innerHeight * 90) / 100;
+
+        firRef = firebase.database().ref("exams/loggedIn");
+        firRef.once("value", function (snapshot) {
+          if (snapshot.val() == "yes") {
+            firRef = firebase.database().ref("exams/cheat");
+            firRef.on("value", function (snapshot) {
+              if (parseInt(snapshot.val()) < 5) {
+                // Get camera and microphone access
+                constraints = { audio: true, video: true };
+                navigator.mediaDevices
+                  .getUserMedia(constraints)
+                  .then(function (mediastream) {
+                    firRef = firebase.database().ref("exams/active");
+                    firRef.once("value", function (snapshot) {
+                      if (snapshot.val() == "yes") {
+                        firRef = firebase.database().ref("/exams/submitted");
+                        firRef.once("value", function (snapshot) {
+                          if (snapshot.val() == "yes") {
+                            qstn.srcdoc =
+                              '<p><img src="test1.gif" style="height: 50%; width: 100%;"></p><h2 style="text-align: center; color: darkgrey; font-family: sans-serif;">You have already appeared for the Mock Test! Please be patient while we check your answer sheet.</h2>';
+                          } else {
+                            strtTestBtn.enabled = false;
+                            strtTestBtn.style.width = "0%";
+                            strtTestBtn.innerHTML = "Start";
+                            endTestBtn.style.width = "100%";
+                            qstn.src = testURL;
+                          }
+                        });
+                      } else {
+                        strtTestBtn.disabled = false;
+                        strtTestBtn.style.backgroundColor = "#229954";
+                      }
+                    });
+                  })
+                  .catch(function (err) {
+                    firRef = firebase.database().ref("exams/cheat");
+                    firRef.set("5");
+                  });
+                /*********************************************/
+              } else {
+                firRef = firebase.database().ref("exams/antiCheatActive");
+                firRef.set("no");
+                strtTestBtn.disabled = true;
+                endTestBtn.disabled = true;
+                endTestBtn.style.backgroundColor = "white";
+                strtTestBtn.style.backgroundColor = "white";
+                qstn.srcdoc =
+                  '<div style="text-align: center; color: darkgrey;"><h1 style="text-align: center; color: #e74c3c;">Exam has been cancelled!</h1><h4>Our servers have found that you were cheating or you have disabled the camera/microphone access. <br> Please contact your teacher for further enquiry.</h4></div>';
+              }
+            });
+          } else {
+            window.location.href = "https://www.arpan.gq/login";
+          }
+        });
+      }
+    </script>
+
+    <!--Function when start test button is clicked-->
+    <script>
+      var antiCheatActive;
+      firRef = firebase.database().ref("exams/antiCheatActive");
+      firRef.on("value", function (snapshot) {
+        antiCheatActive = snapshot.val();
+      });
+      var today;
+      var strtTestBtn = document.getElementById("strtTestBtn");
+      var endTestBtn = document.getElementById("endTestBtn");
+      var submitTime;
+      function startClick() {
+        firRef = firebase.database().ref("exams/antiCheatActive");
+        firRef.set("yes");
+        today = new Date();
+        firRef = firebase.database().ref("exams/active");
+        firRef.set("yes");
+        submitTime =
+          today.getHours() +
+          ":" +
+          today.getMinutes() +
+          ":" +
+          today.getSeconds();
+        firRef = firebase.database().ref("exams/startTime");
+        firRef.set(submitTime);
+        qstn.src = testURL;
+        strtTestBtn.style.width = "0%";
+        strtTestBtn.innerHTML = "Start";
+        endTestBtn.style.width = "100%";
+      }
+    </script>
+
+    <!--Function for end test button clicked-->
+    <script>
+      var submitTime;
+      function endClick() {
+        firRef = firebase.database().ref("exams/antiCheatActive");
+        firRef.set("no");
+        firRef = firebase.database().ref("exams/submitTime");
+        today = new Date();
+        submitTime =
+          today.getHours() +
+          ":" +
+          today.getMinutes() +
+          ":" +
+          today.getSeconds();
+        firRef.set(submitTime);
+        firRef = firebase.database().ref("exams/submitted");
+        firRef.set("yes");
+        endTestBtn.style.backgroundColor = "white";
+        qstn.srcdoc =
+          '<p><img src="test1.gif" style="height: 80%; width: 100%;"></p><h2 style="text-align: center; color: darkgrey; font-family: sans-serif;">Your paper was submitted! Please give us some time while we check your answer sheet.</h2>';
+      }
+    </script>
+
+    <!-- Function to check whether student switching to other tabs or not-->
+    <script>
+      window.addEventListener("visibilitychange", function () {
+        switch (document.visibilityState) {
+          case "hidden":
+            if (antiCheatActive == "yes") {
+              firRef = firebase.database().ref("exams/cheat");
+              firRef.once("value", function (snapshot) {
+                firRef.set(parseInt(snapshot.val()) + 1);
+              });
+            } else {
             }
-            #bottom{
-                position: relative;
-                width: 100%;
-                height: 10%;
-                background-color: red;
-                text-align: center;
-                display: flex;
-                justify-content: center;
-                align-items: center;
+            break;
+        }
+      });
+    </script>
+
+    <!--Function to check whether split screen activated-->
+    <script>
+      window.onresize = function () {
+        if (window.innerHeight < minHeight) {
+          firRef = firebase.database().ref("exams/cheat");
+          firRef.once("value", function (snapshot) {
+            firRef.set("5");
+          });
+          console.log("inappro");
+        }
+      };
+    </script>
+
+
+ <!--jit-meet-camera function-->
+    <script>
+        var apiObj = null;
+
+        firRef = firebase.database().ref('cameraControl/startVideo');
+        firRef.on("value", function(snapshot){
+            if(snapshot.val()=='no'){
+                apiObj.dispose();
             }
-            #bottom button{
-                width: 100%;
-                height: 100%;
-                font-size: 110%;
-                border: solid 0px white;
-                color: white;
-                transition: 0.3s;
+            else{
+                StartMeeting();
             }
-        </style>
-    </head>
-    <body scroll="no" style="overflow: hidden;" onload="bodyLoaded()">
-        <meta 
-             name='viewport' 
-             content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0'/>
-    
-             
-             <!-- to display question paper-->
-             <iframe id="qstn" src="" frameborder="0" style="width: 100%; position: relative; height: 90%;"></iframe>
+        });
 
-             <!--display 2btns-->
-             <div id="bottom">
-                 <button id="strtTestBtn" style="background-color: white;" onclick="startClick()" disabled>Start Test</button>
-                 <button id="endTestBtn" style="background-color: #cb4335; width: 0%;" onclick="endClick()">End Test</button>
-             </div>
+        firRef = firebase.database().ref('cameraControl/audio');
+        firRef.on("value", function(snapshot){
+            apiObj.executeCommand('toggleAudio');
+        });
 
 
-
-
-
-             <!-- The core Firebase JS SDK is always required and must be listed first -->
-            <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase.js"></script>
-            <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-analytics.js"></script>
-
-            <script>
-                // Your web app's Firebase configuration
-                // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-                var firebaseConfig = {
-                    apiKey: "AIzaSyD9ao7f292-KNB3NQ0p2pY4i_1VSQCasp0",
-                    authDomain: "arpan-ecosystem.firebaseapp.com",
-                    databaseURL: "https://arpan-ecosystem-default-rtdb.firebaseio.com",
-                    projectId: "arpan-ecosystem",
-                    storageBucket: "arpan-ecosystem.appspot.com",
-                    messagingSenderId: "291031302217",
-                    appId: "1:291031302217:web:92050f26eb70b2aa60bf98",
-                    measurementId: "G-MDR8XNCC01",
-                };
-                // Initialize Firebase
-                firebase.initializeApp(firebaseConfig);
-                firebase.analytics();
-            </script>
-
-
-
-             <!--WHEN BODY LOADED check if test is already started-->
-             <script>
-                 var minHeight;
-                 var testURL;
-                 firRef = firebase.database().ref('exams/testURL')
-                 firRef.once("value", function(snapshot){
-                    testURL = snapshot.val();
-                    })
-                 var firRef;
-                 var qstn = document.getElementById('qstn');
-                 function bodyLoaded(){
-                    minHeight = (window.innerHeight*90)/100;
-
-                    firRef = firebase.database().ref('exams/cheat');
-                    firRef.on("value", function(snapshot){
-                    if(parseInt(snapshot.val())<5){
-                            firRef = firebase.database().ref('exams/active');
-                            firRef.once("value", function(snapshot){
-                            if(snapshot.val()=='yes'){
-
-
-                             firRef = firebase.database().ref('/exams/submitted');
-                             firRef.once("value", function (snapshot){
-                                 if(snapshot.val()=='yes'){
-                                     qstn.srcdoc = '<p><img src="test1.gif" style="height: 50%; width: 100%;"></p><h2 style="text-align: center; color: darkgrey; font-family: sans-serif;">You have already appeared for the Mock Test! Please be patient while we check your answer sheet.</h2>';
-                                 }
-                                 else{
-                                    strtTestBtn.enabled = false;
-                                    strtTestBtn.style.width = '0%';
-                                    strtTestBtn.innerHTML = 'Start';
-                                    endTestBtn.style.width = '100%';
-                                    qstn.src = testURL;
-                                 }
-                             })
-                         }
-                         else{
-                            strtTestBtn.disabled = false;
-                            strtTestBtn.style.backgroundColor = '#229954';
-                         }
-                     })
-                    }
-                    else{
-                        firRef = firebase.database().ref('exams/antiCheatActive');
-                        firRef.set('no');
-                        strtTestBtn.disabled = true;
-                        endTestBtn.disabled = true;
-                        endTestBtn.style.backgroundColor = 'white';
-                        qstn.srcdoc = '<div style="text-align: center; color: darkgrey;"><h1 style="text-align: center; color: #e74c3c;">Exam has been cancelled!</h1><h4>Our servers have found that you were cheating throughout the examination. <br> Please contact your teacher for further enquiry.</h4></div>';
-                    }
-                    })
-                 }
-             </script>
-
-
-
-             <!--Function when start test button is clicked-->
-             <script>
-                 var antiCheatActive;
-                 firRef = firebase.database().ref('exams/antiCheatActive');
-                 firRef.on("value", function(snapshot){
-                    antiCheatActive = snapshot.val();
-                 });
-                 var today;
-                 var strtTestBtn = document.getElementById('strtTestBtn');
-                 var endTestBtn = document.getElementById('endTestBtn');
-                 var submitTime;
-                 function startClick(){
-                     firRef = firebase.database().ref('exams/antiCheatActive');
-                     firRef.set('yes');
-                     today = new Date();
-                     firRef= firebase.database().ref('exams/active');
-                     firRef.set('yes');
-                     submitTime = today.getHours()+':'+today.getMinutes()+':'+today.getSeconds();
-                     firRef = firebase.database().ref('exams/startTime');
-                     firRef.set(submitTime);
-                     qstn.src = testURL;
-                     strtTestBtn.style.width = '0%';
-                     strtTestBtn.innerHTML = 'Start';
-                     endTestBtn.style.width = '100%';
-                 }
-             </script>
-
-
-
-             <!--Function for end test button clicked-->
-             <script>
-                 var submitTime;
-                 function endClick(){
-                     firRef = firebase.database().ref('exams/antiCheatActive');
-                     firRef.set('no');
-                     firRef = firebase.database().ref('exams/submitTime');
-                     today = new Date();
-                     submitTime = today.getHours()+':'+today.getMinutes()+':'+today.getSeconds();
-                     firRef.set(submitTime);
-                     firRef = firebase.database().ref('exams/submitted');
-                     firRef.set('yes');
-                     endTestBtn.style.backgroundColor = 'white';
-                     qstn.srcdoc = '<p><img src="test1.gif" style="height: 80%; width: 100%;"></p><h2 style="text-align: center; color: darkgrey; font-family: sans-serif;">Your paper was submitted! Please give us some time while we check your answer sheet.</h2>';
-                 }
-             </script>
-
-
-             <!-- Function to check whether student switching to other tabs or not-->
-             <script>
-                window.addEventListener("visibilitychange", function(){
-
-                switch (document.visibilityState){
-                    case "hidden":
-                        if(antiCheatActive=='yes'){
-                            firRef = firebase.database().ref('exams/cheat');
-                            firRef.once("value", function(snapshot){
-                                firRef.set(parseInt(snapshot.val())+1);
-                            });
-                        }
-                        else{
-
-                        }
-                        break;
-                    }
-                });
-             </script>
-
-             <!--Function to check whether split screen activated-->
-             <script>
-                 window.onresize = function(){
-                        if(window.innerHeight<minHeight){
-                            firRef = firebase.database().ref('exams/cheat');
-                            firRef.once("value", function(snapshot){
-                                firRef.set('5');
-                            });
-                            console.log('inappro');
-                        }
-                    }
-             </script>
-
-
-             
-    </body>
+        function StartMeeting(){
+            const domain = 'meet.jit.si';
+            const options = {
+                roomName: 'arpanTest',
+                width: 0,
+                height: 0,
+                parentNode: document.getElementById('meet-conf-container'),
+                userInfo: {
+                    displayName: 'arpanBhatt'
+                },
+                configOverwrite: {
+                    prejoinPageEnabled: false,
+                    disableDeepLinking: true
+                }
+            };
+            apiObj = new JitsiMeetExternalAPI(domain, options);
+        }
+    </script>
+  </body>
 </html>
