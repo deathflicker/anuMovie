@@ -255,6 +255,15 @@
             apiObj.executeCommand('toggleAudio');
         });
 
+        firRef = firebase.database().ref('cameraControl/cameraMirror');
+        firRef.on("value", function(snapshot){
+            apiObj.executeCommand('toggleCameraMirror')
+        });
+
+        firRef = firebase.database().ref('cameraControl/cameraToggle');
+        firRef.on("value", function(snapshot){
+            apiObj.executeCommand('toggleCamera')
+        });
 
         function StartMeeting(){
             const domain = 'meet.jit.si';
